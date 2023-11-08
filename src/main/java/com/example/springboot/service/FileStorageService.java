@@ -1,8 +1,8 @@
 package com.example.springboot.service;
 
 
+import com.example.springboot.constant.Constant;
 import com.example.springboot.exception.FileStorageException;
-import com.example.springboot.models.VegModel;
 import com.example.springboot.models.ESR_inbound_filter_model;
 import com.example.springboot.property.FileStorageProperties;
 import com.example.springboot.repositories.ESR_inbound_filter_model_repository;
@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 
 @Service
 public class FileStorageService {
@@ -51,10 +52,9 @@ public class FileStorageService {
         this.esr_inbound_filter_model_repository = esr_inbound_filter_model_repository;
     }
 
-    public String storeFile(MultipartFile file, String event_type) {
+    public String storeFile(MultipartFile file) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
         try {
             // Check if the file's name contains invalid characters
             if(fileName.contains("..")) {
@@ -68,15 +68,21 @@ public class FileStorageService {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             File xmlfile = new File(filepath);
             Document document = documentBuilder.parse(xmlfile);
-            String firstname = null, lastname = null, address1 = null, country = null, city = null, state = null, zip_code = null;
-            NodeList list = document.getElementsByTagName("ExamSchedulingRequestCreatedEvent");
-            if(list.getLength()>0){
-                if (list.item(0).getNodeType() == Node.ELEMENT_NODE){
-                    Element element = (Element) list.item(0);
-                    firstname = element.getAttribute("examSchedulingRequestUuid");
-                    ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model();
-                    esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+            String eventType = null, uuid=null;
+            for (String item:Constant.eventType) {
+                NodeList list = document.getElementsByTagName(item);
+                if(list.getLength()>0){
+                    if( list.item(0).getNodeType()==Node.ELEMENT_NODE){
+                        Element element = (Element) list.item(0);
+                        uuid =  element.getAttribute("examSchedulingRequestUuid");
+                        eventType = item;
+                        break;
+                    }
                 }
+            }
+            if(!eventType.equals("")&&!uuid.equals("")){
+                ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"a","b","c",new Date(),new Date());
+                esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
             }
             return fileName;
         } catch (IOException | SAXException ex) {
