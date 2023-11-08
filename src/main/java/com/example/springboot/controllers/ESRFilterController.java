@@ -12,7 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 @RestController
-public class VegController {
+public class ESRFilterController {
 
     @Autowired
     VegRepository peopleRepository;
@@ -22,10 +22,9 @@ public class VegController {
     public List<VegModel> getAllEmployees() {
         return peopleRepository.findAll();
     }
-    @PostMapping("/uploadFile")
+    @PostMapping("/uploadFile")//
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-
-        String fileName = fileStorageService.storeFile(file);
+        String fileName = fileStorageService.storeFile(file, "uploadFile");
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/downloadFile/")
                 .path(fileName)
