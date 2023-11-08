@@ -29,5 +29,5 @@ public class ESR_inbound_filter_model extends RepresentationModel<ESR_inbound_fi
         this.created_dttm = created_dttm;
         this.updated_dttm = updated_dttm;
         this.esr_inbound_filter_id = esr_inbound_filter_id;
-    };
+    }
 }
