@@ -34,7 +34,6 @@ public class VegModel extends RepresentationModel<VegModel> implements Serializa
         this.state = state;
         this.zip_code = zip_code;
         this.country = country;
-
     }
 
     public VegModel() {

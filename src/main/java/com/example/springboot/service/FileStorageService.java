@@ -3,8 +3,9 @@ package com.example.springboot.service;
 
 import com.example.springboot.exception.FileStorageException;
 import com.example.springboot.models.VegModel;
+import com.example.springboot.models.ESR_inbound_filter_model;
 import com.example.springboot.property.FileStorageProperties;
-import com.example.springboot.repositories.VegRepository;
+import com.example.springboot.repositories.ESR_inbound_filter_model_repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -30,14 +31,14 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
     @Autowired
-    private final VegRepository vegRepository;
+    private final ESR_inbound_filter_model_repository esr_inbound_filter_model_repository;
 
-    public FileStorageService(VegRepository vegRepository) {
-        this.vegRepository = vegRepository;
+    public FileStorageService(ESR_inbound_filter_model_repository esr_inbound_filter_model_repository) {
+        this.esr_inbound_filter_model_repository = esr_inbound_filter_model_repository;
         fileStorageLocation = null;
     }
     @Autowired
-    public FileStorageService(FileStorageProperties fileStorageProperties, VegRepository vegRepository) {
+    public FileStorageService(FileStorageProperties fileStorageProperties, ESR_inbound_filter_model_repository esr_inbound_filter_model_repository) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
 
@@ -46,11 +47,11 @@ public class FileStorageService {
         } catch (Exception ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
-        vegRepository = null;
-        this.vegRepository = vegRepository;
+        esr_inbound_filter_model_repository = null;
+        this.esr_inbound_filter_model_repository = esr_inbound_filter_model_repository;
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, String event_type) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -68,19 +69,13 @@ public class FileStorageService {
             File xmlfile = new File(filepath);
             Document document = documentBuilder.parse(xmlfile);
             String firstname = null, lastname = null, address1 = null, country = null, city = null, state = null, zip_code = null;
-            NodeList list = document.getElementsByTagName("VeteranServiceMemberInfo");
+            NodeList list = document.getElementsByTagName("ExamSchedulingRequestCreatedEvent");
             if(list.getLength()>0){
                 if (list.item(0).getNodeType() == Node.ELEMENT_NODE){
                     Element element = (Element) list.item(0);
-                    firstname = element.getAttribute("firstName");
-                    lastname = element.getAttribute("lastName");
-                    address1 = element.getElementsByTagName("Address1").item(0).getTextContent();
-                    country = element.getElementsByTagName("Country").item(0).getTextContent();
-                    city = element.getElementsByTagName("City").item(0).getTextContent();
-                    zip_code = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
-                    state = element.getElementsByTagName("State").item(0).getTextContent();
-                    VegModel vegModel = new VegModel(firstname, lastname, address1, city, state, zip_code, country);
-                    vegRepository.save(vegModel);
+                    firstname = element.getAttribute("examSchedulingRequestUuid");
+                    ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model();
+                    esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
                 }
             }
             return fileName;
