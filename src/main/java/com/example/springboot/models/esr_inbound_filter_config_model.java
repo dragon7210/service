@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ESR_INBOUND_FILTER")
+@Table(name = "ESR_INBOUND_FILTER_CONFIG")
 public class esr_inbound_filter_config_model extends RepresentationModel<esr_inbound_filter_config_model> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
