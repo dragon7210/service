@@ -74,46 +74,4 @@ singleUploadForm.addEventListener('submit', function(event) {
 }, true);
 
 
-function sqlTableFunction() {
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/showSql");
-	xhr.onload = function() {
-		var response = JSON.parse(xhr.responseText);
-		if (xhr.status === 200) {
-			var data = "<table class=\"table\" border=\"1\">\n" +
-				"\t\t\t\t<th>No</th>\n" +
-				"\t\t\t\t<th>First name</th>\n" +
-				"\t\t\t\t<th>Last name</th>\n" +
-				"\t\t\t\t<th>Address1</th>\n" +
-				"\t\t\t\t<th>City</th>\n" +
-				"\t\t\t\t<th>State</th>\n" +
-				"\t\t\t\t<th>Zip/Postal code</th>\n" +
-				"\t\t\t\t<th>Country</th>\n";
 
-			for (var i = 0; i < response.length; i++) {
-				var k = i+1;
-				data += "<tr>"+
-					"<td>"+k+"</td>"+
-					"<td>"+response[i].firstname+"</td>"+
-					"<td>"+response[i].lastname+"</td>"+
-					"<td>"+response[i].address1+"</td>"+
-					"<td>"+response[i].city+"</td>"+
-					"<td>"+response[i].state+"</td>"+
-					"<td>"+response[i].zip_code+"</td>"+
-					"<td>"+response[i].country+"</td>"+
-					"</tr>"
-
-			}
-			data+="</table>";
-			sqlTable.innerHTML = data;
-
-		}
-	}
-	xhr.send();
-}
-
-
-showSQL.addEventListener('click', function(event) {
-	sqlTableFunction();
-	event.preventDefault();
-}, true);

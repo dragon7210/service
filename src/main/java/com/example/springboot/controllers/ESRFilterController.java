@@ -12,7 +12,7 @@ public class ESRFilterController {
 
     @Autowired
     private FileStorageService fileStorageService;
-    @PostMapping("/uploadFile")//
+    @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
         String fileName = fileStorageService.storeFile(file);
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
