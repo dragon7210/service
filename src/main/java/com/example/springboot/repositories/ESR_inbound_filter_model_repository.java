@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.UUID;
 @Repository
 public interface ESR_inbound_filter_model_repository extends JpaRepository<ESR_inbound_filter_model, UUID> {
-    List<ESR_inbound_filter_model> findBysent_to_system(String sent_to_system);
+    List<ESR_inbound_filter_model> findBySent(String sent);
 }

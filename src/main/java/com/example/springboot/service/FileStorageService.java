@@ -79,13 +79,12 @@ public class FileStorageService {
         }
         result.forEach(xmlFile ->
         {
-            System.out.println("File:"+xmlFile.toString());
+            System.out.println("File read and write every 5 mins");
             try {
                 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = null;
                 documentBuilder = documentBuilderFactory.newDocumentBuilder();
                 File xmlfile = new File(xmlFile.toString());
-                System.out.println("Hello");
                 Document document = documentBuilder.parse(xmlfile);
                 String eventType = null, uuid=null;
                 for (String item:Constant.eventType) {
@@ -116,10 +115,10 @@ public class FileStorageService {
     }
 
     public void checkXmlfile10min(){
-        List<ESR_inbound_filter_model> esrInboundFilterModels =  esr_inbound_filter_model_repository.findBysent_to_system("YES");
+        System.out.println("File read and write every 10 mins");
+        List<ESR_inbound_filter_model> esrInboundFilterModels =  esr_inbound_filter_model_repository.findBySent("YES");
         esrInboundFilterModels.forEach(item->{
-            System.out.println("esr_inbound_filter_pkey, inbound_event_type, esr_status, sent_to_system, message");
-            System.out.println(item.esr_inbound_filter_pkey+"  "+item.inbound_event_type+" "+item.esr_status+" "+item.sent_to_system+" "+item.message);
+            System.out.println(item.esr_inbound_filter_pkey+"  "+item.inbound_event_type+" "+item.esr_status+" "+item.sent+" "+item.message);
         });
 
     }
