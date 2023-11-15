@@ -1,7 +1,6 @@
 package com.example.springboot.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -21,7 +20,7 @@ public class ESR_inbound_filter_model extends RepresentationModel<ESR_inbound_fi
     public String message;
     public Date created_dttm;
     public Date updated_dttm;
-    @Getter
+
     public String esr_inbound_filter_id;
 
     public ESR_inbound_filter_model(String inbound_event_type, String esr_inbound_filter_id, String esr_status, String sent_to_system, String message, Date created_dttm, Date updated_dttm){
