@@ -15,7 +15,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,6 +30,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.nio.file.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class FileStorageService {
@@ -51,7 +60,69 @@ public class FileStorageService {
         esr_inbound_filter_model_repository = null;
         this.esr_inbound_filter_model_repository = esr_inbound_filter_model_repository;
     }
+    public void checkXmlfile5min(String folderPath){
+        Path path = Paths.get(folderPath);
 
+        if (!Files.isDirectory(path)) {
+            throw new IllegalArgumentException("The provided path is not a directory");
+        }
+
+        List<Path> result;
+        try (Stream<Path> pathStream = Files.list(path)) {
+            result = pathStream
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.toString().toLowerCase().endsWith(".xml"))
+                    .collect(Collectors.toList());
+
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        result.forEach(xmlFile ->
+        {
+            System.out.println("File:"+xmlFile.toString());
+            try {
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = null;
+                documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                File xmlfile = new File(xmlFile.toString());
+                System.out.println("Hello");
+                Document document = documentBuilder.parse(xmlfile);
+                String eventType = null, uuid=null;
+                for (String item:Constant.eventType) {
+                    NodeList list = document.getElementsByTagName(item);
+                    if(list.getLength()>0){
+                        if( list.item(0).getNodeType()==Node.ELEMENT_NODE){
+                            Element element = (Element) list.item(0);
+                            uuid =  element.getAttribute("examSchedulingRequestUuid");
+                            eventType = item;
+                            break;
+                        }
+                    }
+                }
+                if(!eventType.equals("")&&!uuid.equals("")){
+                    ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"a","NO","b",new Date(),new Date());
+                    esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                }
+            } catch (ParserConfigurationException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SAXException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
+
+    }
+
+    public void checkXmlfile10min(){
+        List<ESR_inbound_filter_model> esrInboundFilterModels =  esr_inbound_filter_model_repository.findBysent_to_system("YES");
+        esrInboundFilterModels.forEach(item->{
+            System.out.println("esr_inbound_filter_pkey, inbound_event_type, esr_status, sent_to_system, message");
+            System.out.println(item.esr_inbound_filter_pkey+"  "+item.inbound_event_type+" "+item.esr_status+" "+item.sent_to_system+" "+item.message);
+        });
+
+    }
     public String storeFile(MultipartFile file) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -67,6 +138,7 @@ public class FileStorageService {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             File xmlfile = new File(filepath);
+            System.out.println("File Path    :"  +filepath);
             Document document = documentBuilder.parse(xmlfile);
             String eventType = null, uuid=null;
             for (String item:Constant.eventType) {
