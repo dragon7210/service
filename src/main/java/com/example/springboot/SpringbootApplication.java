@@ -25,7 +25,8 @@ public class SpringbootApplication {
 	@Scheduled(fixedDelay = 300000) // Delay in milliseconds (5 min * 60 sec * 1000 ms)
 	public void scheduled5min() {
 		String folderPath = "C:/xml";
-		fileService.checkXmlfile5min(folderPath);
+		String specificPath = "C:/xml1";
+		fileService.checkXmlfile5min(folderPath, specificPath);
 	}
 	//10mins
 	@Scheduled(fixedDelay = 600000) // Delay in milliseconds (10 min * 60 sec * 1000 ms)

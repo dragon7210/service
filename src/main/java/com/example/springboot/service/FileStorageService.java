@@ -60,9 +60,9 @@ public class FileStorageService {
         esr_inbound_filter_model_repository = null;
         this.esr_inbound_filter_model_repository = esr_inbound_filter_model_repository;
     }
-    public void checkXmlfile5min(String folderPath){
+    public void checkXmlfile5min(String folderPath, String specificPath){
         Path path = Paths.get(folderPath);
-
+        System.out.println("File read and write every 5 mins");
         if (!Files.isDirectory(path)) {
             throw new IllegalArgumentException("The provided path is not a directory");
         }
@@ -79,12 +79,12 @@ public class FileStorageService {
         }
         result.forEach(xmlFile ->
         {
-            System.out.println("File read and write every 5 mins");
             try {
                 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = null;
                 documentBuilder = documentBuilderFactory.newDocumentBuilder();
                 File xmlfile = new File(xmlFile.toString());
+                Path destinationPath = Paths.get(specificPath).resolve(xmlFile.getFileName());
                 Document document = documentBuilder.parse(xmlfile);
                 String eventType = null, uuid=null;
                 for (String item:Constant.eventType) {
@@ -101,6 +101,8 @@ public class FileStorageService {
                 if(!eventType.equals("")&&!uuid.equals("")){
                     ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"a","NO","b",new Date(),new Date());
                     esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                    Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("File move: "+xmlFile.getFileName()+"   "+destinationPath.toString());
                 }
             } catch (ParserConfigurationException e) {
                 throw new RuntimeException(e);
