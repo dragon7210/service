@@ -1,6 +1,5 @@
 package com.example.springboot;
 
-import com.example.springboot.property.FileStorageProperties;
 import com.example.springboot.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -11,9 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication
-@EnableConfigurationProperties({
-		FileStorageProperties.class
-})
+
 @EnableScheduling
 public class SpringbootApplication {
 	@Autowired
