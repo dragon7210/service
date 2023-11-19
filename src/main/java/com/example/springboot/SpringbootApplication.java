@@ -19,14 +19,14 @@ public class SpringbootApplication {
 		SpringApplication.run(SpringbootApplication.class, args);
 	}
 	//5mins
-	@Scheduled(fixedDelay = 300000) // Delay in milliseconds (5 min * 60 sec * 1000 ms)
+	@Scheduled(fixedDelay = 30000) // Delay in milliseconds (5 min * 60 sec * 1000 ms)
 	public void scheduled5min() {
 		String folderPath = "C:/xml";
 		String specificPath = "C:/xml1";
 		fileService.checkXmlfile5min(folderPath, specificPath);
 	}
 	//10mins
-	@Scheduled(fixedDelay = 600000) // Delay in milliseconds (10 min * 60 sec * 1000 ms)
+	@Scheduled(fixedDelay = 60000) // Delay in milliseconds (10 min * 60 sec * 1000 ms)
 	public void scheduled10min() {
 		fileService.checkXmlfile10min();
 	}

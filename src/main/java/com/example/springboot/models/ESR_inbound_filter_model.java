@@ -20,17 +20,17 @@ public class ESR_inbound_filter_model extends RepresentationModel<ESR_inbound_fi
     public String message;
     public Date created_dttm;
     public Date updated_dttm;
+    @Column(name="esr_inbound_filter_id")
+    public String uuid;
 
-    public String esr_inbound_filter_id;
-
-    public ESR_inbound_filter_model(String inbound_event_type, String esr_inbound_filter_id, String esr_status, String sent_to_system, String message, Date created_dttm, Date updated_dttm){
+    public ESR_inbound_filter_model(String inbound_event_type, String uuid, String esr_status, String sent_to_system, String message, Date created_dttm, Date updated_dttm){
         this.inbound_event_type = inbound_event_type;
         this.esr_status = esr_status;
         this.sent= sent_to_system;
         this.message = message;
         this.created_dttm = created_dttm;
         this.updated_dttm = updated_dttm;
-        this.esr_inbound_filter_id = esr_inbound_filter_id;
+        this.uuid = uuid;
     }
 
     public ESR_inbound_filter_model() {
