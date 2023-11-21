@@ -1,7 +1,7 @@
 <ExamManagementEventNotification xmlns="http://va.gov/vler/schemas/vlerSupersetSchema/examManagement/4.3">
   <OriginatingSystem participatingSystemName="VBMS" />
   <Destination participatingSystemName="VBA Contractor" contractorName="VES" />
-  <ReworkEditedRequestClarificationResponseEvent contractId="MDE1118_R3_VES" sensitivityLevel="0" eventUuid="${__UUID}" previousEventUuid="${__UUID}" eventDtg="2023-09-20T16:59:58.741-04:00" modelVersion="4.3" examSchedulingRequestUuid="714405034486310
+  <ReworkEditedRequestClarificationResponseEvent contractId="MDE1118_R4_VES" sensitivityLevel="0" eventUuid="${__UUID}" previousEventUuid="${__UUID}" eventDtg="2023-09-20T16:59:58.741-04:00" modelVersion="4.3" examSchedulingRequestUuid="714405034486310
 ">
     <EventSource participatingSystemName="VBMS" />
     <PostDischargeClaimInformation claimDate="${__time(yyyy-MM-dd HH:mm,)}" claimLabel="New" endProductCode="020NEW" claimPayeeCode="00" benefitProgramType="CP Live">

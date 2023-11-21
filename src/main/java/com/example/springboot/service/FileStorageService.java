@@ -123,7 +123,7 @@ public class FileStorageService {
                                 zipcode = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
                             }
                         }
-                        if(state == null && zipcode == null){
+                        if(state.equals("") && zipcode.equals("0")){
                             String fallbackState = null, fallbackZip = null;
                             NodeList AddressList1 = document.getElementsByTagName("Address");
                             for(int i=0;i<AddressList1.getLength();i++){
@@ -145,6 +145,7 @@ public class FileStorageService {
                             boolean stateIsCA = state.equalsIgnoreCase(stateInDB.get(0).config_type) || state.equalsIgnoreCase("California");
                             boolean zipIsInCA = (Integer. parseInt(zipcode)>90001&&Integer. parseInt(zipcode)<96162);
                             boolean contractIdContainsR4 = contractId.contains("_R4_");
+//                            System.out.println(":" +state+"    "+zipcode+"    "+contractId);
                             if((stateIsCA || zipIsInCA) && contractIdContainsR4){
                                 sent_to_system = "VEMS";
                             }else{
