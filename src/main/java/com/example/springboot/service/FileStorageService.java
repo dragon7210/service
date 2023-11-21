@@ -152,25 +152,22 @@ public class FileStorageService {
                                 sent_to_system = "OMS";
                             }
                         }
-                        ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"READY",sent_to_system,"",new Date(),new Date());
+                        ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED",sent_to_system,"",new Date(),new Date());
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
-                    }else{
-                        if(existingEntity.esr_status.equalsIgnoreCase("COMPLETED")){
-                            try {
-                                Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                            System.out.println("File move: "+xmlFile.getFileName()+"   "+destinationPath.toString());
+                        try {
+                            Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
+                        System.out.println("File move: "+xmlFile.getFileName()+"   "+destinationPath.toString());
                     }
+                }else{
+                    ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","","Parsing ERROR",new Date(),new Date());
+                    esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
                 }
-            } catch (ParserConfigurationException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SAXException e) {
-                throw new RuntimeException(e);
+            } catch (ParserConfigurationException | IOException | SAXException e) {
+                ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","",e.getMessage(),new Date(),new Date());
+                esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
             }
 
         });
