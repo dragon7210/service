@@ -15,7 +15,6 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -155,7 +154,7 @@ public class FileStorageService {
                         ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"READY",sent_to_system,"",new Date(),new Date());
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
                     }else{
-                        if(existingEntity.esr_status.equalsIgnoreCase(":w")){
+                        if(existingEntity.esr_status.equalsIgnoreCase("COMPLETED")){
                             try {
                                 Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                             } catch (IOException e) {
