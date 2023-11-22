@@ -155,7 +155,7 @@ public class FileStorageService {
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
                     }
                 }else{
-                    List<ESR_inbound_filter_model> esrInboundFilterModels = esr_inbound_filter_model_repository.findByEventType("ExamSchedulingRequestCreatedEvent");
+                    List<ESR_inbound_filter_model> esrInboundFilterModels = esr_inbound_filter_model_repository.findByEventTypeAndUuid("ExamSchedulingRequestCreatedEvent", uuid);
                     System.out.println("Count:" + esrInboundFilterModels.size());
                     if(!esrInboundFilterModels.isEmpty()){
                         if(esrInboundFilterModels.get(esrInboundFilterModels.size()-1).sent.equals("VEMS")){

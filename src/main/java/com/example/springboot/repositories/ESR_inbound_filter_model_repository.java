@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface ESR_inbound_filter_model_repository extends JpaRepository<ESR_inbound_filter_model, UUID> {
     List<ESR_inbound_filter_model> findBySent(String sent);
     ESR_inbound_filter_model findByUuid(String uuid);
-    List<ESR_inbound_filter_model> findByEventType(String eventType);
+    List<ESR_inbound_filter_model> findByEventTypeAndUuid(String eventType, String uuid);
 }
