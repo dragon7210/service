@@ -13,7 +13,8 @@ public class ESR_inbound_filter_model extends RepresentationModel<ESR_inbound_fi
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public UUID esr_inbound_filter_pkey;
-    public String inbound_event_type;
+    @Column(name="inbound_event_type")
+    public String eventType;
     public String esr_status;
     @Column(name="sent_to_system")
     public String sent;
@@ -24,7 +25,7 @@ public class ESR_inbound_filter_model extends RepresentationModel<ESR_inbound_fi
     public String uuid;
 
     public ESR_inbound_filter_model(String inbound_event_type, String uuid, String esr_status, String sent_to_system, String message, Date created_dttm, Date updated_dttm){
-        this.inbound_event_type = inbound_event_type;
+        this.eventType = inbound_event_type;
         this.esr_status = esr_status;
         this.sent= sent_to_system;
         this.message = message;

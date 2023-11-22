@@ -40,24 +40,6 @@ public class FileStorageService {
         esr_inbound_filter_config_model_repository = null;
     }
 
-    private void routeToVEMS(String uuid) {
-        // Implement routing logic to VEMS
-        ESR_inbound_filter_model existingEntity = esr_inbound_filter_model_repository.findByUuid(uuid);
-        existingEntity.sent = "VEMS";
-        esr_inbound_filter_model_repository.save(existingEntity);
-        System.out.println("Routing XML to VEMS");
-    }
-
-    private void routeToOMS(String uuid) {
-        // Implement routing logic to OMS
-        ESR_inbound_filter_model existingEntity = esr_inbound_filter_model_repository.findByUuid(uuid);
-        existingEntity.sent = "OMS";
-        esr_inbound_filter_model_repository.save(existingEntity);
-        System.out.println("Routing XML to OMS");
-    }
-    public void schdule5mins(String folderPath, String specificPath){
-
-    }
     public void checkXmlfile5min(String folderPath, String specificPath){
         Path path = Paths.get(folderPath);
         System.out.println("File read and write every 5 mins");
@@ -84,7 +66,7 @@ public class FileStorageService {
                 File xmlfile = new File(xmlFile.toString());
                 Path destinationPath = Paths.get(specificPath).resolve(xmlFile.getFileName());
                 Document document = documentBuilder.parse(xmlfile);
-                String eventType = null, uuid=null;
+                String eventType = "", uuid="";
                 for (String item:Constant.eventType) {
                     NodeList list = document.getElementsByTagName(item);
                     if(list.getLength()>0){
@@ -96,75 +78,104 @@ public class FileStorageService {
                         }
                     }
                 }
-                if(!eventType.equals("")&&!uuid.equals("")){
-                    String sent_to_system = "";
-                    ESR_inbound_filter_model existingEntity = esr_inbound_filter_model_repository.findByUuid(uuid);
-                    if (existingEntity==null) {
-                        List<esr_inbound_filter_config_model> stateInDB;
-                        stateInDB = esr_inbound_filter_config_model_repository.findAll();
-                        String state = "";
-                        String zipcode = "0";
-                        String contractId = "";
-                        NodeList list = document.getElementsByTagName(eventType);
-                        for(int i=0;i<list.getLength();i++) {
-                            Node node = list.item(i);
-                            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                                Element element = (Element) list.item(0);
-                                contractId =  element.getAttribute("contractId");
-                            }
-                        }
-                        System.out.println("ContractID: "+ contractId);
-                        NodeList addressList = document.getElementsByTagName("PreferredGeoAddress");
-                        for(int i=0;i<addressList.getLength();i++){
-                            Node node = addressList.item(i);
-                            if (node.getNodeType() == Node.ELEMENT_NODE){
-                                Element element = (Element) node;
-                                state = element.getElementsByTagName("State").item(0).getTextContent();
-                                zipcode = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
-                            }
-                        }
-                        if(state.equals("") && zipcode.equals("0")){
-                            String fallbackState = null, fallbackZip = null;
-                            NodeList AddressList1 = document.getElementsByTagName("Address");
-                            for(int i=0;i<AddressList1.getLength();i++){
-                                Node node = AddressList1.item(i);
-                                if (node.getNodeType() == Node.ELEMENT_NODE){
-                                    Element element = (Element) node;
-                                    fallbackState = element.getElementsByTagName("State").item(0).getTextContent();
-                                    fallbackZip = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
+                System.out.println(": " +eventType);
+                if(eventType.equalsIgnoreCase("ExamSchedulingRequestCreatedEvent")){
+                    if(!eventType.equals("")&&!uuid.equals("")){
+                        String sent_to_system = "";
+                        ESR_inbound_filter_model existingEntity = esr_inbound_filter_model_repository.findByUuid(uuid);
+                        if (existingEntity==null) {
+                            List<esr_inbound_filter_config_model> stateInDB;
+                            stateInDB = esr_inbound_filter_config_model_repository.findAll();
+                            String state = "";
+                            String zipcode = "0";
+                            String contractId = "";
+                            NodeList list = document.getElementsByTagName(eventType);
+                            for(int i=0;i<list.getLength();i++) {
+                                Node node = list.item(i);
+                                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                                    Element element = (Element) list.item(0);
+                                    contractId =  element.getAttribute("contractId");
                                 }
                             }
-                            boolean fallbackStateIsCA = stateInDB.get(0).config_type.equalsIgnoreCase(fallbackState) || "California".equalsIgnoreCase(fallbackState);
-                            boolean fallbackZipIsInCA = (Integer. parseInt(fallbackZip)>90001&&Integer. parseInt(fallbackZip)<96162);
-                            if ((fallbackStateIsCA || fallbackZipIsInCA) && contractId.contains("_R4_")) {
-                                sent_to_system = "VEMS";
-                            } else {
-                                sent_to_system = "OMS";
+                            System.out.println("ContractID: "+ contractId);
+                            NodeList addressList = document.getElementsByTagName("PreferredGeoAddress");
+                            for(int i=0;i<addressList.getLength();i++){
+                                Node node = addressList.item(i);
+                                if (node.getNodeType() == Node.ELEMENT_NODE){
+                                    Element element = (Element) node;
+                                    state = element.getElementsByTagName("State").item(0).getTextContent();
+                                    zipcode = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
+                                }
                             }
-                        }else {
-                            boolean stateIsCA = state.equalsIgnoreCase(stateInDB.get(0).config_type) || state.equalsIgnoreCase("California");
-                            boolean zipIsInCA = (Integer. parseInt(zipcode)>90001&&Integer. parseInt(zipcode)<96162);
-                            boolean contractIdContainsR4 = contractId.contains("_R4_");
+                            if(state.equals("") && zipcode.equals("0")){
+                                String fallbackState = "", fallbackZip = "0";
+                                NodeList AddressList1 = document.getElementsByTagName("Address");
+                                for(int i=0;i<AddressList1.getLength();i++){
+                                    Node node = AddressList1.item(i);
+                                    if (node.getNodeType() == Node.ELEMENT_NODE){
+                                        Element element = (Element) node;
+                                        fallbackState = element.getElementsByTagName("State").item(0).getTextContent();
+                                        fallbackZip = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
+                                    }
+                                }
+                                if(fallbackZip.equals("0")&&fallbackState.equals("")){
+                                    sent_to_system = "OMS";
+                                }else{
+                                    boolean fallbackStateIsCA = stateInDB.get(0).config_type.equalsIgnoreCase(fallbackState) || "California".equalsIgnoreCase(fallbackState);
+                                    boolean fallbackZipIsInCA = (Integer. parseInt(fallbackZip)>90001&&Integer. parseInt(fallbackZip)<96162);
+                                    if ((fallbackStateIsCA || fallbackZipIsInCA) && contractId.contains("_R4_")) {
+                                        sent_to_system = "VEMS";
+                                    } else {
+                                        sent_to_system = "OMS";
+                                    }
+                                }
+
+                            }else {
+                                boolean stateIsCA = state.equalsIgnoreCase(stateInDB.get(0).config_type) || state.equalsIgnoreCase("California");
+                                boolean zipIsInCA = (Integer. parseInt(zipcode)>90001&&Integer. parseInt(zipcode)<96162);
+                                boolean contractIdContainsR4 = contractId.contains("_R4_");
 //                            System.out.println(":" +state+"    "+zipcode+"    "+contractId);
-                            if((stateIsCA || zipIsInCA) && contractIdContainsR4){
-                                sent_to_system = "VEMS";
-                            }else{
-                                sent_to_system = "OMS";
+                                if((stateIsCA || zipIsInCA) && contractIdContainsR4){
+                                    sent_to_system = "VEMS";
+                                }else{
+                                    sent_to_system = "OMS";
+                                }
                             }
+                            ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED",sent_to_system,"",new Date(),new Date());
+                            esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                            try {
+                                Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            System.out.println("File move: "+xmlFile.getFileName()+"   "+destinationPath.toString());
                         }
-                        ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED",sent_to_system,"",new Date(),new Date());
+                    }else{
+                        ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","","Parsing ERROR",new Date(),new Date());
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
-                        try {
-                            Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        System.out.println("File move: "+xmlFile.getFileName()+"   "+destinationPath.toString());
                     }
                 }else{
-                    ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","","Parsing ERROR",new Date(),new Date());
-                    esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                    List<ESR_inbound_filter_model> esrInboundFilterModels = esr_inbound_filter_model_repository.findByEventType("ExamSchedulingRequestCreatedEvent");
+                    System.out.println("Count:" + esrInboundFilterModels.size());
+                    if(!esrInboundFilterModels.isEmpty()){
+                        if(esrInboundFilterModels.get(esrInboundFilterModels.size()-1).sent.equals("VEMS")){
+                            ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","VEMS","",new Date(),new Date());
+                            esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                        }else{
+                            ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","OMS","",new Date(),new Date());
+                            esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                        }
+                    }else{
+                        ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","OMS","",new Date(),new Date());
+                        esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+                    }
+                    try {
+                        Files.move(xmlFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+
             } catch (ParserConfigurationException | IOException | SAXException e) {
                 ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","",e.getMessage(),new Date(),new Date());
                 esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
@@ -179,7 +190,7 @@ public class FileStorageService {
         System.out.println("File read and write every 10 mins");
         List<ESR_inbound_filter_model> esrInboundFilterModels =  esr_inbound_filter_model_repository.findBySent("YES");
         esrInboundFilterModels.forEach(item->{
-            System.out.println(item.esr_inbound_filter_pkey+"  "+item.inbound_event_type+" "+item.esr_status+" "+item.sent+" "+item.message);
+            System.out.println(item.esr_inbound_filter_pkey+"  "+item.eventType+" "+item.esr_status+" "+item.sent+" "+item.message);
         });
 
     }

@@ -1,16 +1,15 @@
 <ExamManagementEventNotification xmlns="http://va.gov/vler/schemas/vlerSupersetSchema/examManagement/4.3">
   <OriginatingSystem participatingSystemName="VBMS" />
   <Destination participatingSystemName="VBA Contractor" contractorName="VES" />
-  <EditedRequestClarificationResponse contractId="MDE1118_R3_VES" sensitivityLevel="0" eventUuid="${__UUID}" previousEventUuid="${__UUID}" eventDtg="2023-09-20T16:59:58.741-04:00" modelVersion="4.3" examSchedulingRequestUuid="537515632222870
-">
+  <ExamSchedulingRequestCreatedEvent contractId="MDE1118_R4_VES" sensitivityLevel="0" eventUuid="${__UUID}" previousEventUuid="${__UUID}" eventDtg="2023-09-20T16:59:58.741-04:00" modelVersion="4.3" examSchedulingRequestUuid="537515632222870">
     <EventSource participatingSystemName="VBMS" />
     <PostDischargeClaimInformation claimDate="${__time(yyyy-MM-dd HH:mm,)}" claimLabel="New" endProductCode="020NEW" claimPayeeCode="00" benefitProgramType="CP Live">
       <VeteranServiceMemberInfo EDIPI="EDIPI" fullName="${fullName}" lastName="Bern" firstName="Ronald" middleName="${middleName}" gender="Female" dateOfBirth="1985-06-25" regionalOfficeCode="339" fileNumber="${__RandomString(9,1234567890,)}" emailAddress="${__RandomString(5,abcdefghijklmopqestuvwxyz)}@maximus.com">
         <Address>
           <Address1>makrd</Address1>
           <City>New York</City>
-          <State>Texas</State>
-          <ZipOrPostalCode>99565</ZipOrPostalCode>
+          <State>CA</State>
+          <ZipOrPostalCode>91565</ZipOrPostalCode>
           <Country>USA</Country>
         </Address>
         <Phone primaryPhone="${phone}" />
@@ -102,5 +101,5 @@
         <ContentionPreferredExaminerGenderIndicator>No</ContentionPreferredExaminerGenderIndicator>
       </ExamRelatedContention>
     </ExamRelatedContentions>
-  </EditedRequestClarificationResponse>
+  </ExamSchedulingRequestCreatedEvent>
 </ExamManagementEventNotification>
