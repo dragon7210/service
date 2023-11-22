@@ -87,7 +87,7 @@ public class FileStorageService {
                             List<esr_inbound_filter_config_model> stateInDB;
                             stateInDB = esr_inbound_filter_config_model_repository.findAll();
                             String state = "";
-                            String zipcode = "0";
+                            String zipcode = "";
                             String contractId = "";
                             NodeList list = document.getElementsByTagName(eventType);
                             for(int i=0;i<list.getLength();i++) {
@@ -107,8 +107,8 @@ public class FileStorageService {
                                     zipcode = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
                                 }
                             }
-                            if(state.equals("") && zipcode.equals("0")){
-                                String fallbackState = "", fallbackZip = "0";
+                            if(state.equals("") || zipcode.equals("")){
+                                String fallbackState = "", fallbackZip = "";
                                 NodeList AddressList1 = document.getElementsByTagName("Address");
                                 for(int i=0;i<AddressList1.getLength();i++){
                                     Node node = AddressList1.item(i);
@@ -118,7 +118,7 @@ public class FileStorageService {
                                         fallbackZip = element.getElementsByTagName("ZipOrPostalCode").item(0).getTextContent();
                                     }
                                 }
-                                if(fallbackZip.equals("0")&&fallbackState.equals("")){
+                                if(fallbackZip.equals("0")||fallbackState.equals("")){
                                     sent_to_system = "OMS";
                                 }else{
                                     boolean fallbackStateIsCA = stateInDB.get(0).config_type.equalsIgnoreCase(fallbackState) || "California".equalsIgnoreCase(fallbackState);
@@ -154,17 +154,18 @@ public class FileStorageService {
                         ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model("","","ERROR","","Parsing ERROR",new Date(),new Date());
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
                     }
-                }else{
+                }
+                else{
                     List<ESR_inbound_filter_model> esrInboundFilterModels = esr_inbound_filter_model_repository.findByEventTypeAndUuid("ExamSchedulingRequestCreatedEvent", uuid);
                     System.out.println("Count:" + esrInboundFilterModels.size());
                     if(!esrInboundFilterModels.isEmpty()){
-                        if(esrInboundFilterModels.get(esrInboundFilterModels.size()-1).sent.equals("VEMS")){
+//                        if(esrInboundFilterModels.get(esrInboundFilterModels.size()-1).sent.equals("VEMS")){
                             ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","VEMS","",new Date(),new Date());
                             esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
-                        }else{
-                            ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","OMS","",new Date(),new Date());
-                            esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
-                        }
+//                        }else{
+//                            ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","OMS","",new Date(),new Date());
+//                            esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
+//                        }
                     }else{
                         ESR_inbound_filter_model esr_inbound_filter_model = new ESR_inbound_filter_model(eventType,uuid,"COMPLETED","OMS","",new Date(),new Date());
                         esr_inbound_filter_model_repository.save(esr_inbound_filter_model);
